@@ -24,7 +24,46 @@ Update Docker resources with 4 CPUs and 6-10GB RAM as shown here, <a href="https
 
 ## Steps for CRDB test
 
-## Additional info
+1. Change directory to crdb2node
+
+2. Execute create_redis_enterprise_2_node_cluster.sh to create 2 separate one node clusters
+
+3. execute createCRDB.sh to create a CRDB clustered database on each cluster
+
+4. test writing in each cluster and seeing result in other cluster
+```
+sudo docker exec -it re-node1 bash
+set hello1 on1
+get hello2
+```
+
+```
+sudo docker exec -it re-node2 bash
+set hello2 on2
+get hello1
+```
+5. take node 1 out of the network using 
+```
+docker network disconnect crdb2node_default re-node1
+```
+
+6. test writing and see that values don't update
+```
+sudo docker exec -it re-node1 bash
+set nogo1 on1
+get nogo2
+```
+
+```
+sudo docker exec -it re-node2 bash
+set nogo2 on2
+get nogo1
+```
+
+7. restore the network and the entries will come back
+```
+docker network connect crdb2node_default re-node1
+```
 
 * <a href="https://hub.docker.com/r/redislabs/redis">Redis Labs Docker image</a>
 
@@ -37,3 +76,4 @@ Update Docker resources with 4 CPUs and 6-10GB RAM as shown here, <a href="https
 * <a href="https://oss.redislabs.com/redisgraph/">RedisGraph Documentation</a>
 
 * <a href="https://oss.redislabs.com/redistimeseries/">RedisTimeSeries Documentation</a>
+* <a href="https://dzone.com/articles/getting-started-with-active-active-geo-distributio/">Dzone CRDT with Redis Enterprise 
