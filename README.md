@@ -1,6 +1,7 @@
 ## A 3 node Redis Enterprise cluster setup in Docker containers (For Development purpose only)
-## This is heavily lifted from work by Virag Trapathi.  I just took his work and added docker-compose and volumes.  He did the hard parts!!
-##  for more detail and additional content see:   https://github.com/viragtripathi/redis-enterprise-docker
+
+This is heavily lifted from work by Virag Trapathi.  I just took his work and added docker-compose and volumes.  He did the hard parts!!
+for more detail and additional content see:   https://github.com/viragtripathi/redis-enterprise-docker
 
 ### Prerequisites
 
