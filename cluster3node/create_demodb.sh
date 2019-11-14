@@ -1,0 +1,1 @@
+curl -v -k -u REDemo@redislabs.com:redis123 -X POST https://localhost:9443/v1/bdbs -H Content-type:application/json -d '{ "name": "demo-db", "port": 12000, "memory_size": 100000000, "type" : "redis", "replication": true}'
