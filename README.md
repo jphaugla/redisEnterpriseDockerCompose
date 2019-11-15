@@ -11,11 +11,18 @@ Update Docker resources with 4 CPUs and 6-10GB RAM as shown here, <a href="https
 
 ## Steps for 3 node cluster
 1. Change directory to cluster3node
+```
+cd cluster3node
+```
 
 2. Execute create_redis_enterprise_3_node_cluster.sh to create a 3 node(server) Redis Enterprise cluster
-
+```
+./create_redis_enterprise_3_node_cluster.sh
+```
 3. execute createDB.sh to create a database
-
+```
+./createDB.sh
+```
 4. Execute cleanup.sh to kill and remove the 3 docker containers. [OPTIONAL]
 
 5. Execute destroy.sh to remove the containers and also delete the <a href="https://hub.docker.com/r/redislabs/redis">redislabs/redis</a> images. [OPTIONAL]
