@@ -42,12 +42,22 @@ sudo docker exec -it re-node2 bash
 set hello2 on2
 get hello1
 ```
-5. take node 1 out of the network using 
+5. test simultaneous increment and decrement
+start increment on cluster1
+```
+./testincr.sh
+```
+start decrement on cluster2
+```
+./testdecr.sh
+```
+
+6. take node 1 out of the network using 
 ```
 docker network disconnect crdb2node_default re-node1
 ```
 
-6. test writing and see that values don't update
+7. test writing and see that values don't update
 ```
 sudo docker exec -it re-node1 bash
 set nogo1 on1
@@ -60,7 +70,7 @@ set nogo2 on2
 get nogo1
 ```
 
-7. restore the network and the entries will come back
+8. restore the network and the entries will come back
 ```
 docker network connect crdb2node_default re-node1
 ```
