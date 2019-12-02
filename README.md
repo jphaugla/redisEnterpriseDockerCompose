@@ -40,12 +40,14 @@ cd cluster3node
 4. test writing in each cluster and seeing result in other cluster
 ```
 sudo docker exec -it re-node1 bash
+redis-cli -p 12005
 set hello1 on1
 get hello2
 ```
 
 ```
 sudo docker exec -it re-node2 bash
+redis-cli -p 12005
 set hello2 on2
 get hello1
 ```
@@ -67,12 +69,14 @@ docker network disconnect crdb2node_default re-node1
 7. test writing and see that values don't update
 ```
 sudo docker exec -it re-node1 bash
+redis-cli -p 12005
 set nogo1 on1
 get nogo2
 ```
 
 ```
 sudo docker exec -it re-node2 bash
+redis-cli -p 12005
 set nogo2 on2
 get nogo1
 ```
