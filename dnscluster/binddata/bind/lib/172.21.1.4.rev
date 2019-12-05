@@ -1,0 +1,8 @@
+$ttl 38400
+4.1.21.172.in-addr.arpa.	IN	SOA	north.redislabs-training.org. admin.redislabs-training.org. (
+			1575502132
+			10800
+			3600
+			604800
+			38400 )
+4.1.21.172.in-addr.arpa.	IN	NS	north.redislabs-training.org.

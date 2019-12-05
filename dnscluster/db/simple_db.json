@@ -1,0 +1,9 @@
+{
+"name": "testdb",
+"replication": false,
+"sharding": false,
+"version": "4.0",
+"memory_size": 1000000000,
+"type": "redis",
+"proxy_policy": "single"
+}

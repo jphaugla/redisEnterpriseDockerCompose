@@ -1,0 +1,1 @@
+docker run -d -p 80:6901 --net redislabs --ip 172.18.0.2  --name vnc  consol/centos-xfce-vnc
