@@ -85,7 +85,21 @@ get nogo1
 ```
 docker network connect crdb2node_default re-node1
 ```
-
+## Steps for dns redis cluster
+1. Change directory to dnscluster
+2. To bring up both north and south cluster
+```bash 
+./reset_north_and_south_cluster.sh
+```
+3. Instead, to bring up only north cluster
+```bash
+./reset_north_cluster.sh
+```
+4. To access dns server from browser
+```bash
+https://localhost:10000
+```
+5. 
 * <a href="https://hub.docker.com/r/redislabs/redis">Redis Labs Docker image</a>
 
 * <a href="https://oss.redislabs.com/redisearch/index.html">RediSearch Documentation</a>
