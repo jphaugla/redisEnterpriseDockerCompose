@@ -21,7 +21,7 @@ services:
     volumes:
       - redispersN1:/var/opt/redislabs/persist
       - ./resolv.conf:/etc/resolv.conf
-      - ./redislogN1:/var/opt/redislabs
+      - redislogN1:/var/opt/redislabs
     networks:
       dnscluster_net:
          ipv4_address: 172.21.1.1
@@ -46,7 +46,7 @@ services:
     volumes:
       - redispersN2:/var/opt/redislabs/persist
       - ./resolv.conf:/etc/resolv.conf
-      - ./redislogN2:/var/opt/redislabs
+      - .edislogN2:/var/opt/redislabs
     networks:
       dnscluster_net:
          ipv4_address: 172.21.1.2
@@ -71,7 +71,7 @@ services:
     volumes:
       - redispersN3:/var/opt/redislabs/persist
       - ./resolv.conf:/etc/resolv.conf
-      - ./redislogN3:/var/opt/redislabs
+      - redislogN3:/var/opt/redislabs
     networks:
       dnscluster_net:
          ipv4_address: 172.21.1.3
@@ -97,7 +97,6 @@ volumes:
   redislogsN1:
   redislogsN2:
   redislogsN3:
-  binddata:
 networks:
   dnscluster_net:
      ipam:

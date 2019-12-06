@@ -19,9 +19,9 @@ services:
       - '31443:8443'
       - '51443:9443'
     volumes:
-      - ./redispersS1:/var/opt/redislabs/persist
+      - redispersS1:/var/opt/redislabs/persist
       - ./resolv.conf:/etc/resolv.conf
-      - ./redislogS1:/var/opt/redislabs
+      - redislogS1:/var/opt/redislabs
     networks:
       dnscluster_net:
          ipv4_address: 172.21.1.11
@@ -44,9 +44,9 @@ services:
       - '32443:8443'
       - '52443:9443'
     volumes:
-      - ./redispersS2:/var/opt/redislabs/persist
+      - redispersS2:/var/opt/redislabs/persist
       - ./resolv.conf:/etc/resolv.conf
-      - ./redislogS2:/var/opt/redislabs
+      - redislogS2:/var/opt/redislabs
     networks:
       dnscluster_net:
          ipv4_address: 172.21.1.12
@@ -69,9 +69,9 @@ services:
       - '33443:8443'
       - '53443:9443'
     volumes:
-      - ./redispersS3:/var/opt/redislabs/persist
+      - redispersS3:/var/opt/redislabs/persist
       - ./resolv.conf:/etc/resolv.conf
-      - ./redislogS3:/var/opt/redislabs
+      - redislogS3:/var/opt/redislabs
     networks:
       dnscluster_net:
          ipv4_address: 172.21.1.13
