@@ -99,7 +99,13 @@ docker network connect crdb2node_default re-node1
 ```bash
 https://localhost:10000
 ```
-5. 
+5. DNS database is included.  This is setup if needed
+* address records
+![Address Records](images/DNS_address_records.png)
+* namespace records
+![Namesapce records](images/DNS_name_server_records.png)
+
+##  Additional Links
 * <a href="https://hub.docker.com/r/redislabs/redis">Redis Labs Docker image</a>
 
 * <a href="https://oss.redislabs.com/redisearch/index.html">RediSearch Documentation</a>
