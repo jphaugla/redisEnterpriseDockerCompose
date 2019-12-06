@@ -104,6 +104,10 @@ https://localhost:10000
 ![Address Records](images/DNS_address_records.png)
 * namespace records
 ![Namesapce records](images/DNS_name_server_records.png)
+6. Can shutdown all resources
+```bash
+./shutdown_all.sh
+```
 
 ##  Additional Links
 * <a href="https://hub.docker.com/r/redislabs/redis">Redis Labs Docker image</a>
