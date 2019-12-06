@@ -1,0 +1,6 @@
+docker volume rm dnscluster_redispersS1
+docker volume rm dnscluster_redispersS2
+docker volume rm dnscluster_redispersS3
+docker volume rm dnscluster_redislogsS1
+docker volume rm dnscluster_redislogsS2
+docker volume rm dnscluster_redislogsS3

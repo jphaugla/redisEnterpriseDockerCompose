@@ -1,11 +1,11 @@
 version: '3'
 
 services:
-  n1:
+  s1:
     image: redislabs/redis:latest
     restart: always
-    container_name: n1
-    hostname: n1.north.redislabs-training.org
+    container_name: s1
+    hostname: s1.south.redislabs-training.org
     cap_add:
       - ALL
     ulimits:
@@ -15,22 +15,22 @@ services:
       - ALLOW_EMPTY_PASSWORD=yes
       - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
     ports:
-      - '18070:8070'
-      - '21443:8443'
-      - '41443:9443'
+      - '48070:8070'
+      - '31443:8443'
+      - '51443:9443'
     volumes:
-      - redispersN1:/var/opt/redislabs/persist
+      - ./redispersS1:/var/opt/redislabs/persist
       - ./resolv.conf:/etc/resolv.conf
-      - ./redislogN1:/var/opt/redislabs
+      - ./redislogS1:/var/opt/redislabs
     networks:
       dnscluster_net:
-         ipv4_address: 172.21.1.1
+         ipv4_address: 172.21.1.11
 
-  n2:
+  s2:
     image: redislabs/redis:latest
     restart: always
-    container_name: n2
-    hostname: n2.north.redislabs-training.org
+    container_name: s2
+    hostname: s2.south.redislabs-training.org
     cap_add:
       - ALL
     ulimits:
@@ -40,22 +40,22 @@ services:
       - ALLOW_EMPTY_PASSWORD=yes
       - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
     ports:
-      - '28070:8070'
-      - '22443:8443'
-      - '42443:9443'
+      - '58070:8070'
+      - '32443:8443'
+      - '52443:9443'
     volumes:
-      - redispersN2:/var/opt/redislabs/persist
+      - ./redispersS2:/var/opt/redislabs/persist
       - ./resolv.conf:/etc/resolv.conf
-      - ./redislogN2:/var/opt/redislabs
+      - ./redislogS2:/var/opt/redislabs
     networks:
       dnscluster_net:
-         ipv4_address: 172.21.1.2
+         ipv4_address: 172.21.1.12
 
-  n3:
+  s3:
     image: redislabs/redis:latest
     restart: always
-    container_name: n3
-    hostname: n3.north.redislabs-training.org
+    container_name: s3
+    hostname: s3.south.redislabs-training.org
     cap_add:
       - ALL
     ulimits:
@@ -65,39 +65,24 @@ services:
       - ALLOW_EMPTY_PASSWORD=yes
       - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
     ports:
-      - '38070:8070'
-      - '23443:8443'
-      - '43443:9443'
+      - '58071:8070'
+      - '33443:8443'
+      - '53443:9443'
     volumes:
-      - redispersN3:/var/opt/redislabs/persist
+      - ./redispersS3:/var/opt/redislabs/persist
       - ./resolv.conf:/etc/resolv.conf
-      - ./redislogN3:/var/opt/redislabs
+      - ./redislogS3:/var/opt/redislabs
     networks:
       dnscluster_net:
-         ipv4_address: 172.21.1.3
-  bind:
-    restart: always
-    image: sameersbn/bind:9.11.3-20190706
-    container_name: bind
-    hostname: ns.redislabs-training.org
-    ports:
-      - "53:53/udp"
-      - "53:53/tcp"
-      - "10000:10000/tcp"
-    volumes:
-      - ./binddata:/data
-    networks:
-      dnscluster_net:
-         ipv4_address: 172.21.1.4
+         ipv4_address: 172.21.1.13
 
 volumes:
-  redispersN1:
-  redispersN2:
-  redispersN3:
-  redislogsN1:
-  redislogsN2:
-  redislogsN3:
-  binddata:
+  redispersS1:
+  redispersS2:
+  redispersS3:
+  redislogsS1:
+  redislogsS2:
+  redislogsS3:
 networks:
   dnscluster_net:
      ipam:
