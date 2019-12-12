@@ -131,14 +131,15 @@ docker exec -it n3 bash
 rladmin status
 ```
 6. Confirm database configuration matches using REST API (still running from the n3 bash)
+Make sure to verify the database name as this is likely different than below
 ```bash
-curl -k -u "admin@redislabs-training.org:admin" -H 'Content-type: application/json' -X GET https://north.redislabs-training.org:9443/v1/bdbs/1
+curl -k -u "admin@redislabs-training.org:admin" -H 'Content-type: application/json' -X GET https://redis-10590.north.redislabs-training.org:9443/v1/bdbs/1
 ```
 Output should resemble this:  
 ![rladmin status output](images/rladminstat.png)
 7.  Can delete the database using the API.  verify database ID with rladmin output.  This example is assuming the ID is "1"
 ```bash
-curl -k -u "admin@redislabs-training.org:admin" -H 'Content-type: application/json' -X DELETE https://north.redislabs-training.org:9443/v1/bdbs/1
+curl -k -u "admin@redislabs-training.org:admin" -H 'Content-type: application/json' -X DELETE https://redis-10590.north.redislabs-training.org:9443/v1/bdbs/1
 ```
 8.  Create JSON file with database config (still from n3 bash)
 ```bash
@@ -153,13 +154,13 @@ curl -k -u "admin@redislabs-training.org:admin" -H 'Content-type: application/js
 rladmin status
 ```
 11.  Add data to the database
+Note: first exit leaves redis-cli and then second exit leaves n3 bash shell
 ```bash
 redis-cli -h redis-12000.north.redislabs-training.org -p 12000
 set hello world
 exit
 exit  
 ```
-Note: first exit leaves redis-cli and then second exit leaves n3 bash shell
 12.  Simulate Node Failure with Standalone Shard (there is no slave shard so database will fail)
 ```bash
 docker stop n1
@@ -169,22 +170,54 @@ docker stop n1
 docker exec -it n3 bash -c "rladmin status"
 ```
 14.  Simulate Node Failure with Standalone Shard (there is no slave shard so database will fail) and check status
+Database is down and node 2 is now in master role
 ```bash
 docker stop n1
-docker exec -it n3 bash -c "rladmin status"
+docker exec -it n3 bash 
+rladmin status
 ```
-Database is down and node 2 is now in master role
 15.  Check do see if data still exists (spoiler alert:  it is gone!)
+this exit leaves the redis-cli so in n3 bash
 ```bash
 redis-cli -h redis-12000.north.redislabs-training.org -p 12000
 keys *
 exit
 ```
-this exit leaves the redis-cli so in n3 bash
 16.  Can delete the database using the API.  verify database ID with rladmin output.  This example is assuming the is is "2".  Also, verify the database was deleted by running rladmin status again
 ```bash
-curl -k -u "admin@redislabs-training.org:admin" -H 'Content-type: application/json' -X DELETE https://north.redislabs-training.org:9443/v1/bdbs/2
+curl -k -u "admin@redislabs-training.org:admin" -H 'Content-type: application/json' -X DELETE https://redis-12000.north.redislabs-training.org:9443/v1/bdbs/2
+rladmin status
 ```
+## Persistence testing
+1. Create new database with AOF using <https://localhost:21443>
+Provide a database name=persistence-demo, change memory limit=1GB, choose AOF (fsynch every write) data persistence, set
+Endpoint port number to 12000 and click on “Activate”
+![Parameters for persistent database setup](images/persistentDBsetup.png)
+2. Test status of databse and add data to database
+```bash
+docker exec -it n3 bash 
+rladmin status
+redis-cli -h redis-12000.north.redislabs-training.org -p 12000
+set hello world
+exit
+```
+3. Verify persistence of data with node failure and restart
+```bash
+docker stop n1
+docker exec -it n3 bash -c "rladmin status"
+docker start n1
+docker exec -it n3 bash 
+rladmin status
+redis-cli -h redis-12000.north.redislabs-training.org -p 12000
+keys *
+exit
+4. Delete persistence database
+```bash
+curl -k -u "admin@redislabs-training.org:admin" -H 'Content-type: application/json' -X DELETE https://redis-12000.north.redislabs-training.org:9443/v1/bdbs/2
+rladmin status
+```
+
+
 ## DNS tips
 To be able to debug dns issues, need dnsutils.
 1.  Install dnsutils on n3
