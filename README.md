@@ -216,7 +216,49 @@ exit
 curl -k -u "admin@redislabs-training.org:admin" -H 'Content-type: application/json' -X DELETE https://redis-12000.north.redislabs-training.org:9443/v1/bdbs/2
 rladmin status
 ```
-
+## node failure with replication
+1. Create new database with replication using <https://localhost:21443>, verify, and add data
+Provide a database name=ha-demo, change memory limit=1GB, choose AOF epersistenc replication, set
+Endpoint port number to 12000 and click on “Activate”
+![Parameters for persistent database setup](images/HAcreateDB.png)
+```bash
+docker exec -it n3 bash 
+rladmin status
+redis-cli -h redis-12000.north.redislabs-training.org -p 12000
+set hello world
+exit
+```
+2. Check ping resolution of database
+```bash
+ping redis-12000.north.redislabs-training.org
+```
+3. Simulate node failure, verify failure over to replica and zero data loss
+The ping will show database is now on node 2 IP instead of node 1
+However, notice that slave on node 1 does not come up
+```bash
+docker stop n1
+docker exec -it n3 bash
+rladmin status
+redis-cli -h redis-12000.north.redislabs-training.org -p 12000
+keys *
+exit
+ping redis-12000.north.redislabs-training.org
+```
+## Enable slave HA
+1. Verify slave HA is disabled by default (note the "slave_ha: disabled")
+```bash
+docker exec -it n3 bash 
+rladmin info cluster
+```
+2. Enable Slave High Availability, verify "slave_ha: enabled", see slave come back on-line
+```bash
+rladmin tune cluster slave_ha enabled
+rladmin tune cluster slave_ha_grace_period 0
+rladmin tune cluster slave_ha_cooldown_period 0
+rladmin tune cluster slave_ha_bdb_cooldown_period 0
+rladmin info cluster
+rladmin status
+```
 
 ## DNS tips
 To be able to debug dns issues, need dnsutils.
