@@ -100,6 +100,8 @@ docker network connect crdb2node_default re-node1
 https://localhost:10000
 ```
 5. DNS database is included.  This is setup if needed
+* important to first remove all zones then create new master zone
+
 * address records
 ![Address Records](images/DNS_address_records.png)
 * namespace records
@@ -108,6 +110,69 @@ https://localhost:10000
 ```bash
 ./shutdown_all.sh
 ```
+## Utilizing the setup
+A variety of tests and explorations of Redis Enterprise can be taken with
+this setup.  Some of these tests will be documented below
+###  A few tips
+1.  Validate running containers and note port mappings 
+```bash
+docker ps
+```
+2.  get the IP for any node
+Use provided scripts to get the IP address for any node.
+```bash
+./getip.sh
+```
+Can also get the IP address by referencing docker-compose.yml as IPs are hardcoded in the yaml
+3.  User name and password will be  admin@redislabs-training.org / admin
+### go through light tutorial
+1. Create north 3 node cluster
+```bash
+./create_north_cluster.sh
+```
+2. Use browser to Go to Managemnent UI for node https://localhost:21443/
+login to browser using:  admin@redislabs-training.org / admin
+3. Click next to create a redis database
+4. Provide the database name, set the memory limit and click “Activate”.
+Can use:  name=training  memory limit = 1GB
+Note the endpoint name and port number as those will be needed to connect
+Without entering port on creation, it will be generated. Below is example
+```bash
+redis-10590.north.redislabs-training.org:10590
+```
+5. Confirm database configuration matches using rladmin from node 3
+```bash
+docker exec -it n3 bash 
+rladmin status
+```
+6. Confirm database configuration matches using REST API
+```bash
+curl -k -u "admin@redislabs-training.org:admin" -H 'Content-type: application/json' -X GET https://north.redislabs-training.org:9443/v1/bdbs/1
+```
+Output should resemble this:  
+![rladmin status output](images/rladminstat.png)
+7.  Can delete the database using the API.  verify database ID with rladmin output.  This example is assuming the is is "2"
+```bash
+curl -k -u "admin@redislabs-training.org:admin" -H 'Content-type: application/json' -X DELETE https://north.redislabs-training.org:9443/v1/bdbs/2
+```
+8.  Create JSON file with database config
+```bash
+echo { \"name\": \"demo-db\", \"memory_size\": 1073741824, \"port\": 12000 } > /tmp/create_db.json
+```
+9.  Create database using the REST API
+```bash
+curl -k -u "admin@redislabs-training.org:admin" -H 'Content-type: application/json' -d @/tmp/create_db.json -X POST https://north.redislabs-training.org:9443/v1/bdbs
+```
+10.  Confirm the database was created using rladmin
+```bash
+rladmin status
+```
+11.  Simulate Node Failure with Standalone Shard
+11.  Can delete the database using the API.  verify database ID with rladmin output.  This example is assuming the is is "2".  Also, verify the database was deleted by running rladmin status again
+```bash
+curl -k -u "admin@redislabs-training.org:admin" -H 'Content-type: application/json' -X DELETE https://north.redislabs-training.org:9443/v1/bdbs/2
+```
+
 
 ##  Additional Links
 * <a href="https://hub.docker.com/r/redislabs/redis">Redis Labs Docker image</a>
