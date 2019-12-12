@@ -87,25 +87,10 @@ docker network connect crdb2node_default re-node1
 ```
 ## Steps for dns redis cluster
 1. Change directory to dnscluster
-2. To bring up both north and south cluster
-```bash 
-./reset_north_and_south_cluster.sh
-```
-3. Instead, to bring up only north cluster
+2. To bring up cluster
 ```bash
 ./reset_north_cluster.sh
 ```
-4. To access dns server from browser
-```bash
-https://localhost:10000
-```
-5. DNS database is included.  This is setup if needed
-* important to first remove all zones then create new master zone
-
-* address records
-![Address Records](images/DNS_address_records.png)
-* namespace records
-![Namesapce records](images/DNS_name_server_records.png)
 6. Can shutdown all resources
 ```bash
 ./shutdown_all.sh
@@ -130,7 +115,7 @@ Can also get the IP address by referencing docker-compose.yml as IPs are hardcod
 ```bash
 ./create_north_cluster.sh
 ```
-2. Use browser to Go to Managemnent UI for node https://localhost:21443/
+2. Use browser to Go to Managemnent UI for node <https://localhost:21443>
 login to browser using:  admin@redislabs-training.org / admin
 3. Click next to create a redis database
 4. Provide the database name, set the memory limit and click “Activate”.
@@ -145,21 +130,21 @@ redis-10590.north.redislabs-training.org:10590
 docker exec -it n3 bash 
 rladmin status
 ```
-6. Confirm database configuration matches using REST API
+6. Confirm database configuration matches using REST API (still running from the n3 bash)
 ```bash
 curl -k -u "admin@redislabs-training.org:admin" -H 'Content-type: application/json' -X GET https://north.redislabs-training.org:9443/v1/bdbs/1
 ```
 Output should resemble this:  
 ![rladmin status output](images/rladminstat.png)
-7.  Can delete the database using the API.  verify database ID with rladmin output.  This example is assuming the is is "2"
+7.  Can delete the database using the API.  verify database ID with rladmin output.  This example is assuming the ID is "1"
 ```bash
-curl -k -u "admin@redislabs-training.org:admin" -H 'Content-type: application/json' -X DELETE https://north.redislabs-training.org:9443/v1/bdbs/2
+curl -k -u "admin@redislabs-training.org:admin" -H 'Content-type: application/json' -X DELETE https://north.redislabs-training.org:9443/v1/bdbs/1
 ```
-8.  Create JSON file with database config
+8.  Create JSON file with database config (still from n3 bash)
 ```bash
 echo { \"name\": \"demo-db\", \"memory_size\": 1073741824, \"port\": 12000 } > /tmp/create_db.json
 ```
-9.  Create database using the REST API
+9.  Create database using the REST API (from n3 bash)
 ```bash
 curl -k -u "admin@redislabs-training.org:admin" -H 'Content-type: application/json' -d @/tmp/create_db.json -X POST https://north.redislabs-training.org:9443/v1/bdbs
 ```
@@ -167,13 +152,89 @@ curl -k -u "admin@redislabs-training.org:admin" -H 'Content-type: application/js
 ```bash
 rladmin status
 ```
-11.  Simulate Node Failure with Standalone Shard
-11.  Can delete the database using the API.  verify database ID with rladmin output.  This example is assuming the is is "2".  Also, verify the database was deleted by running rladmin status again
+11.  Add data to the database
+```bash
+redis-cli -h redis-12000.north.redislabs-training.org -p 12000
+set hello world
+exit
+exit  
+```
+Note: first exit leaves redis-cli and then second exit leaves n3 bash shell
+12.  Simulate Node Failure with Standalone Shard (there is no slave shard so database will fail)
+```bash
+docker stop n1
+```
+13.  Verify database is down 
+```bash
+docker exec -it n3 bash -c "rladmin status"
+```
+14.  Simulate Node Failure with Standalone Shard (there is no slave shard so database will fail) and check status
+```bash
+docker stop n1
+docker exec -it n3 bash -c "rladmin status"
+```
+Database is down and node 2 is now in master role
+15.  Check do see if data still exists (spoiler alert:  it is gone!)
+```bash
+redis-cli -h redis-12000.north.redislabs-training.org -p 12000
+keys *
+exit
+```
+this exit leaves the redis-cli so in n3 bash
+16.  Can delete the database using the API.  verify database ID with rladmin output.  This example is assuming the is is "2".  Also, verify the database was deleted by running rladmin status again
 ```bash
 curl -k -u "admin@redislabs-training.org:admin" -H 'Content-type: application/json' -X DELETE https://north.redislabs-training.org:9443/v1/bdbs/2
 ```
+## DNS tips
+To be able to debug dns issues, need dnsutils.
+1.  Install dnsutils on n3
+```bash
+docker exec -it --user root n3
+apt-get update
+apt-get install dnsutils -y
+```
+2.  Verify can resolve database name (example dependent on port)
+```bash
+- opcode: QUERY, status: NOERROR, id: 44648
+;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 3, ADDITIONAL: 1
 
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 4096
+; COOKIE: 185ef1ef6e7a841dbab8a04c5df24ae8112dc67705fecbab (good)
+;; QUESTION SECTION:
+;redis-18959.north.redislabs-training.org. IN A
 
+;; ANSWER SECTION:
+redis-18959.north.redislabs-training.org. 5 IN A 172.21.1.1
+
+;; AUTHORITY SECTION:
+north.redislabs-training.org. 38400 IN	NS	n3.north.redislabs-training.org.
+north.redislabs-training.org. 38400 IN	NS	n2.north.redislabs-training.org.
+north.redislabs-training.org. 38400 IN	NS	n1.north.redislabs-training.org.
+
+;; Query time: 18 msec
+;; SERVER: 172.21.1.4#53(172.21.1.4)
+;; WHEN: Thu Dec 12 14:12:56 UTC 2019
+;; MSG SIZE  rcvd: 164
+```
+3. To access dns server from browser
+```bash
+https://localhost:10000
+```
+4. DNS database is included.  This is setup
+* Delete all existing DNS zones
+* Add a new master zone with domain name redislabs-training.org using ns.redislabs-training.org
+* address records
+	* add address record for ns.redislabs-training.org with 172.21.1.4 for address
+	* add address record for n1.north.redislabs-training.org with 172.21.1.1
+	* add address record for n2.north.redislabs-training.org with 172.21.1.2
+	* add address record for n3.north.redislabs-training.org with 172.21.1.3
+* namespace records
+	* add NS recrod for north.redislabs-training.org with n1.north.redislabs-training.org
+	* add NS recrod for north.redislabs-training.org with n2.north.redislabs-training.org
+	* add NS recrod for north.redislabs-training.org with n3.north.redislabs-training.org
+* Continue for the south cluster
+* from within the dns server browser click on "Edit Zone Records File" and see that it matches content [here](https://github.com/jphaugla/redisEnterpriseDockerCompose/blob/master/dnscluster/binddata/bind/lib/redislabs-training.org.hosts)
 ##  Additional Links
 * <a href="https://hub.docker.com/r/redislabs/redis">Redis Labs Docker image</a>
 
