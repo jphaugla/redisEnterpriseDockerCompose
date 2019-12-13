@@ -218,8 +218,8 @@ rladmin status
 ```
 ## node failure with replication
 1. Create new database with replication using <https://localhost:21443>, verify, and add data
-Provide a database name=ha-demo, change memory limit=1GB, choose AOF epersistenc replication, set
-Endpoint port number to 12000 and click on “Activate”
+Provide a database name=ha-demo, change memory limit=1GB, choose AOF persistent replication, set
+Endpoint port number to 12000 and click on Activate
 ![Parameters for persistent database setup](images/HAcreateDB.png)
 ```bash
 docker exec -it n3 bash 
@@ -259,6 +259,49 @@ rladmin tune cluster slave_ha_bdb_cooldown_period 0
 rladmin info cluster
 rladmin status
 ```
+## Active-Active - not enough resources on my machine so I stopped on this part.  Better to do this on by crbd directory above
+			same problem with doing replica-of here
+1. this is file to create both but not tested... ./create_north_and_south_cluster.sh
+
+## Monitoring with Prometheus and Grafana
+more information [Redis, Prometheus, Grafana integration](https://docs.redislabs.com/latest/rs/administering/monitoring-metrics/prometheus-integration/)
+
+1.  Create JSON file with database config (still from n3 bash)
+```bash
+docker exec -it n3 bash 
+echo { \"name\": \"metrics-db\", \"memory_size\": 1073741824, \"port\": 12000 } > /tmp/create_metrics_db.json
+```
+2.  Create database using the REST API (from n3 bash)
+```bash
+curl -k -u "admin@redislabs-training.org:admin" -H 'Content-type: application/json' -d @/tmp/create_metrics_db.json -X POST https://north.redislabs-training.org:9443/v1/bdbs
+rladmin status
+```
+3.  Generate Data with memtier_benchmark
+```bash
+memtier_benchmark -s redis-12000.north.redislabs-training.org -p 12000 --ratio=1:4 --test-time=600 -d 100 -t 3 -c 20 --pipeline=25 --key-pattern=S:S -x 10 --hide-histogram
+```
+4. View Metrics using the REST API
+```bash
+curl -k https://north.redislabs-training.org:8070/metrics
+```
+5. Access the Prometheus UI and execute a query
+<http://localhost:9090/graph>
+Choose a metric from the dropdown labeled “insert metric at cursor” then click “Execute”
+![insert prometheus metric](images/prometheusInsertMetric.png)
+6. Set up Grafana Data Source
+<http://localhost:3000/>
+use admin and P@ssword for username and password
+In the Grafana configuration menu, select Data Sources.
+![add prometheus datasource](images/GrafanaDataSources.png)
+Add the new datasource:
+![add prometheus datasource parameters](images/grafanaDataSourceParms.png)
+*  Name: redis-enterprise
+*  Type: Prometheus
+*  URL: http://prom:9090
+*  "Skip TLS Verify"
+
+
+
 
 ## DNS tips
 To be able to debug dns issues, need dnsutils.
