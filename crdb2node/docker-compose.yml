@@ -39,6 +39,26 @@ services:
       - '12010-12015:12000-12005'
     volumes:
       - redispers2:/var/opt/redislabs/persist
+
+  re-node3:
+    image: redislabs/redis:latest
+    container_name: re-node3
+    cap_add:
+      - sys_resource
+      - ipc_lock
+    ulimits:
+      memlock: -1
+    environment:
+      # ALLOW_EMPTY_PASSWORD is recommended only for development.
+      - ALLOW_EMPTY_PASSWORD=yes
+      - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
+    ports:
+      - '38070:8070'
+      - '38443:8443'
+      - '39443:9443'
+    volumes:
+      - redispers3:/var/opt/redislabs/persist
+
   jupyter:
     image: jupyter/minimal-notebook
     volumes:
@@ -64,3 +84,4 @@ services:
 volumes:
   redispers1:
   redispers2:
+  redispers3:
