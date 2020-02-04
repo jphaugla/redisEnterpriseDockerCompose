@@ -33,59 +33,57 @@ cd cluster3node
 
 1. Change directory to crdb2node
 
-2. Execute create_redis_enterprise_2_node_cluster.sh to create 2 separate one node clusters
-
-3. execute createCRDB.sh to create a CRDB clustered database on each cluster
-
-4. test writing in each cluster and seeing result in other cluster
-```
-sudo docker exec -it re-node1 bash
-redis-cli -p 12005
-set hello1 on1
-get hello2
+2. Execute script to create a 3 separate one node clusters
+```bash
+./create_2_redis_enterprise_clusters.sh
 ```
 
+3. Execute script to create a CRDB clustered database on each cluster
+```bash
+./createCRDB.sh 
 ```
-sudo docker exec -it re-node2 bash
-redis-cli -p 12005
-set hello2 on2
-get hello1
+
+4. test writing in each cluster and seeing result in other cluster.  Note, run each of these commands indivually not all four together 
+```bash
+docker exec -it re-node1 bash -c "echo 'set hello1 setfrom1' | redis-cli -p 12005"
+docker exec -it re-node2 bash -c "echo 'set hello2 setfrom2' | redis-cli -p 12005"
+docker exec -it re-node1 bash -c "echo 'get hello2' | redis-cli -p 12005"
+docker exec -it re-node2 bash -c "echo 'get hello1' | redis-cli -p 12005"
 ```
-5. test simultaneous increment and decrement
+5. test simultaneous increment and decrement (use 2 separate terminal sessions)
 start increment on cluster1
-```
+```bash
 ./testincr.sh
 ```
 start decrement on cluster2
-```
+```bash
 ./testdecr.sh
 ```
 
 6. take node 1 out of the network using 
-```
+```bash
 docker network disconnect crdb2node_default re-node1
 ```
 
-7. test writing and see that values don't update
-```
-sudo docker exec -it re-node1 bash
-redis-cli -p 12005
-set nogo1 on1
-get nogo2
-```
-
-```
-sudo docker exec -it re-node2 bash
-redis-cli -p 12005
-set nogo2 on2
-get nogo1
+7. test writing and see that values don't update (run each separately)
+```bash
+docker exec -it re-node1 bash -c "echo 'set nogo1 on1' | redis-cli -p 12005"
+docker exec -it re-node2 bash -c "echo 'set nogo2 on2' | redis-cli -p 12005"
+docker exec -it re-node1 bash -c "echo 'get nogo1' | redis-cli -p 12005"
+docker exec -it re-node1 bash -c "echo 'get nogo2' | redis-cli -p 12005"
+docker exec -it re-node2 bash -c "echo 'get nogo1' | redis-cli -p 12005"
+docker exec -it re-node2 bash -c "echo 'get nogo2' | redis-cli -p 12005"
 ```
 
-8. restore the network and the entries will come back
+8. restore the network and the entries will come back (rerun the get commands)
 ```bash
 docker network connect crdb2node_default re-node1
 ```
 9. test connection on the database using python code
+### run the requirements script
+```bash
+docker exec -it jupyter bash -c "pip install -r src/requirements.txt"
+```
 ```bash
 docker exec -it jupyter bash -c "python src/simple_connect.py"
 ```
@@ -96,10 +94,6 @@ docker exec -it re-node1 bash -c "curl -k -u "REDemo@redislabs.com:redis123" -H 
 ## Test certificates on crdb2node
 This uses steps documented at this web page
 http://tgrall.github.io/blog/2020/01/02/how-to-use-ssl-slash-tls-with-redis-enterprise/
-### run the requirements script
-```bash
-docker exec -it jupyter bash -c "pip install -r src/requirements.txt"
-```
 ### create  security  enabled clustered database
 ```bash
 ./createCRDBTLS.sh
