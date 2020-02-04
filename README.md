@@ -113,11 +113,25 @@ generate keys
 docker exec -it jupyter bash
 cd src
 ./generatecertificates.sh  (just hit return do not enter anything)
+exit
 ```
-manually add the key to cluster
+### manually add the key to cluster  (assuming a mac for the pbcopy to copy data to clipboard)
+```bash
+cd src/certificates
+pbcopy < client_cert_app_001.pem
+```
+###  go to browser and add the certificate to the database
+https://127.0.0.1:18443
+* click on crdb-encrypt database
+* click on configuration
+* scroll to bottom and click edit
+* on TLS, change radio selection to "Require TLS for all Communications"
+* click "+" to add the key
+* Paste the key in the box and click the blue ok button
+# click update at the bottom
 9. test connection on the database using python code
 ```bash
-docker exec -it jupyter bash -c "python src/connect.py"
+ docker exec -it jupyter bash -c "cd src;python connect.py"
 ```
 ### Next 
 ## Steps for dns redis cluster
