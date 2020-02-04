@@ -69,6 +69,7 @@ services:
     depends_on:
       - re-node1
       - re-node2
+      - re-node3
 
   insight:
     image: "redislabs/redisinsight:latest"
@@ -80,6 +81,7 @@ services:
     depends_on:
       - re-node1
       - re-node2
+      - re-node3
 
 volumes:
   redispers1:
