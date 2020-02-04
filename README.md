@@ -85,28 +85,28 @@ get nogo1
 ```bash
 docker network connect crdb2node_default re-node1
 ```
-9. delete database used so far
+9. test connection on the database using python code
 ```bash
-curl -k -u "admin@redislabs-training.org:admin" -H 'Content-type: application/json' -X DELETE https://redis-10590.north.redislabs-training.org:9443/v1/bdbs/1
+docker exec -it jupyter bash -c "python src/simple_connect.py"
+```
+10. delete database used so far
+```bash
+docker exec -it re-node1 bash -c "curl -k -u "REDemo@redislabs.com:redis123" -H 'Content-type: application/json' -X DELETE https://localhost:9443/v1/bdbs/1"
 ```
 ## Test certificates on crdb2node
-
 This uses steps documented at this web page
 http://tgrall.github.io/blog/2020/01/02/how-to-use-ssl-slash-tls-with-redis-enterprise/
 ### run the requirements script
 ```bash
 docker exec -it jupyter bash -c "pip install -r src/requirements.txt"
 ```
-### test connection without certificates
-```bash
-docker exec -it jupyter bash -c "python src/simple_connect.py"
-```
 ### create  security  enabled clustered database
-First add the password of secretdb01
-Go to https://localhost:18443/ and edit the database to add this password
+```bash
+./createCRDBTLS.sh
+```
 ### test connectivity with secret enabled
 ```bash
- docker exec -it re-node1 bash -c "redis-cli -p 12005 -a secretdb01 info server"
+ docker exec -it re-node1 bash -c "redis-cli -p 12000 -a secretdb01 info server"
 ```
 ### set up encryption
 get cluster proxy certificate from the first node
@@ -119,6 +119,11 @@ generate keys
 docker exec -it jupyter bash
 cd src
 ./generatecertificates.sh  (just hit return do not enter anything)
+```
+manually add the key to cluster
+9. test connection on the database using python code
+```bash
+docker exec -it jupyter bash -c "python src/connect.py"
 ```
 ### Next 
 ## Steps for dns redis cluster
