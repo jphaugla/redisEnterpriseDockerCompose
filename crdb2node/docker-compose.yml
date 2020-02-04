@@ -39,6 +39,28 @@ services:
       - '12010-12015:12000-12005'
     volumes:
       - redispers2:/var/opt/redislabs/persist
+  jupyter:
+    image: jupyter/minimal-notebook
+    volumes:
+      - ./src/:/home/jovyan/src
+    ports:
+      - 8888:8888
+    container_name: jupyter
+    depends_on:
+      - re-node1
+      - re-node2
+
+  insight:
+    image: "redislabs/redisinsight:latest"
+    container_name: insight
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./redisinsight:/db
+    depends_on:
+      - re-node1
+      - re-node2
+
 volumes:
   redispers1:
   redispers2:
