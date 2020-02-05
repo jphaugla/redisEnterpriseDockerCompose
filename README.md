@@ -11,16 +11,16 @@ Update Docker resources with 4 CPUs and 6-10GB RAM as shown here, <a href="https
 
 ## Steps for 3 node cluster
 1. Change directory to cluster3node
-```
+```bash
 cd cluster3node
 ```
 
 2. Execute create_redis_enterprise_3_node_cluster.sh to create a 3 node(server) Redis Enterprise cluster
-```
+```bash
 ./create_redis_enterprise_3_node_cluster.sh
 ```
 3. execute createDB.sh to create a database
-```
+```bash
 ./createDB.sh
 ```
 4. Execute cleanup.sh to kill and remove the 3 docker containers. [OPTIONAL]
@@ -103,10 +103,12 @@ http://tgrall.github.io/blog/2020/01/02/how-to-use-ssl-slash-tls-with-redis-ente
  docker exec -it re-node1 bash -c "redis-cli -p 12000 -a secretdb01 info server"
 ```
 ### set up encryption
-get cluster proxy certificate from the first node
+get cluster proxy certificate from the all three nodes
 ```bash
 cd src/certificates
 docker cp re-node1:/etc/opt/redislabs/proxy_cert.pem .
+docker cp re-node2:/etc/opt/redislabs/proxy_cert.pem proxy_cert2.pem
+docker cp re-node3:/etc/opt/redislabs/proxy_cert.pem proxy_cert3.pem
 ```
 generate keys
 ```bash
@@ -133,6 +135,11 @@ https://127.0.0.1:18443
 ```bash
  docker exec -it jupyter bash -c "cd src;python connect.py"
 ```
+10. write data to the database using python code
+```bash
+ docker exec -it jupyter bash -c "cd src;python addData.py"
+```
+### Finally, add new DC to the CRDB and remove old cluster
 ### Next 
 ## Steps for dns redis cluster
 1. Change directory to dnscluster
