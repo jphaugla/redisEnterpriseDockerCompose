@@ -6,7 +6,7 @@ import pprint
 try:
   r = redis.StrictRedis(
     decode_responses=True,
-    host='re-node1',
+    host='re-node2',
     port=12005
     )
 

@@ -80,16 +80,15 @@ docker exec -it re-node2 bash -c "echo 'get nogo2' | redis-cli -p 12005"
 docker network connect crdb2node_default re-node1
 ```
 9. test connection on the database using python code
-### run the requirements script
+### run the requirements script and simple connect
 ```bash
 docker exec -it jupyter bash -c "pip install -r src/requirements.txt"
-```
-```bash
 docker exec -it jupyter bash -c "python src/simple_connect.py"
 ```
 10. delete database used so far
 ```bash
 docker exec -it re-node1 bash -c "curl -k -u "REDemo@redislabs.com:redis123" -H 'Content-type: application/json' -X DELETE https://localhost:9443/v1/bdbs/1"
+docker exec -it re-node2 bash -c "curl -k -u "REDemo@redislabs.com:redis123" -H 'Content-type: application/json' -X DELETE https://localhost:9443/v1/bdbs/1"
 ```
 ## Test certificates on crdb2node
 This uses steps documented at this web page
@@ -98,29 +97,28 @@ http://tgrall.github.io/blog/2020/01/02/how-to-use-ssl-slash-tls-with-redis-ente
 ```bash
 ./createCRDBTLS.sh
 ```
-### test connectivity with secret enabled
+### test connectivity with secret enabled on each machine
 ```bash
  docker exec -it re-node1 bash -c "redis-cli -p 12000 -a secretdb01 info server"
+ docker exec -it re-node2 bash -c "redis-cli -p 12000 -a secretdb01 info server"
 ```
 ### set up encryption
 get cluster proxy certificate from the all three nodes
 ```bash
-cd src/certificates
-docker cp re-node1:/etc/opt/redislabs/proxy_cert.pem .
-docker cp re-node2:/etc/opt/redislabs/proxy_cert.pem proxy_cert2.pem
-docker cp re-node3:/etc/opt/redislabs/proxy_cert.pem proxy_cert3.pem
+docker cp re-node1:/etc/opt/redislabs/proxy_cert.pem src/certificates/proxy_cert1.pem
+docker cp re-node2:/etc/opt/redislabs/proxy_cert.pem src/certificates/proxy_cert2.pem
+docker cp re-node3:/etc/opt/redislabs/proxy_cert.pem src/certificates/proxy_cert3.pem
 ```
 generate keys
 ```bash
 docker exec -it jupyter bash
 cd src
-./generatecertificates.sh  (just hit return do not enter anything)
+./generatekeys.sh  (just hit return do not enter anything)
 exit
 ```
 ### manually add the key to cluster  (assuming a mac for the pbcopy to copy data to clipboard)
 ```bash
-cd src/certificates
-pbcopy < client_cert_app_001.pem
+pbcopy < src/certificates/client_cert_app_001.pem
 ```
 ###  go to browser and add the certificate to the database
 https://127.0.0.1:18443
