@@ -35,20 +35,20 @@ cd cluster3node
 
 2. Execute script to create a 3 separate one node clusters
 ```bash
-./create_2_redis_enterprise_clusters.sh
+./create_clusters.sh
 ```
 
-3. Execute script to create a CRDB clustered database on each cluster
+3. Execute script to create a CRDB clustered database on two clusters
 ```bash
-./createCRDB.sh 
+./crdcreate.sh 
 ```
 
 4. test writing in each cluster and seeing result in other cluster.  Note, run each of these commands indivually not all four together 
 ```bash
-docker exec -it re-node1 bash -c "echo 'set hello1 setfrom1' | redis-cli -p 12005"
-docker exec -it re-node2 bash -c "echo 'set hello2 setfrom2' | redis-cli -p 12005"
-docker exec -it re-node1 bash -c "echo 'get hello2' | redis-cli -p 12005"
-docker exec -it re-node2 bash -c "echo 'get hello1' | redis-cli -p 12005"
+docker exec -it re-node1 bash -c "echo 'set hello1 setfrom1' | redis-cli -p 14555"
+docker exec -it re-node2 bash -c "echo 'set hello2 setfrom2' | redis-cli -p 14555"
+docker exec -it re-node1 bash -c "echo 'get hello2' | redis-cli -p 14555"
+docker exec -it re-node2 bash -c "echo 'get hello1' | redis-cli -p 14555"
 ```
 5. test simultaneous increment and decrement (use 2 separate terminal sessions)
 start increment on cluster1
@@ -67,12 +67,12 @@ docker network disconnect crdb2node_default re-node1
 
 7. test writing and see that values don't update (run each separately)
 ```bash
-docker exec -it re-node1 bash -c "echo 'set nogo1 on1' | redis-cli -p 12005"
-docker exec -it re-node2 bash -c "echo 'set nogo2 on2' | redis-cli -p 12005"
-docker exec -it re-node1 bash -c "echo 'get nogo1' | redis-cli -p 12005"
-docker exec -it re-node1 bash -c "echo 'get nogo2' | redis-cli -p 12005"
-docker exec -it re-node2 bash -c "echo 'get nogo1' | redis-cli -p 12005"
-docker exec -it re-node2 bash -c "echo 'get nogo2' | redis-cli -p 12005"
+docker exec -it re-node1 bash -c "echo 'set nogo1 on1' | redis-cli -p 14555"
+docker exec -it re-node2 bash -c "echo 'set nogo2 on2' | redis-cli -p 14555"
+docker exec -it re-node1 bash -c "echo 'get nogo1' | redis-cli -p 14555"
+docker exec -it re-node1 bash -c "echo 'get nogo2' | redis-cli -p 14555"
+docker exec -it re-node2 bash -c "echo 'get nogo1' | redis-cli -p 14555"
+docker exec -it re-node2 bash -c "echo 'get nogo2' | redis-cli -p 14555"
 ```
 
 8. restore the network and the entries will come back (rerun the get commands)
@@ -85,10 +85,20 @@ docker network connect crdb2node_default re-node1
 docker exec -it jupyter bash -c "pip install -r src/requirements.txt"
 docker exec -it jupyter bash -c "python src/simple_connect.py"
 ```
-10. delete database used so far
+10. add instance to the third cluster (first use list to get CRDB GUID
 ```bash
-docker exec -it re-node1 bash -c "curl -k -u "REDemo@redislabs.com:redis123" -H 'Content-type: application/json' -X DELETE https://localhost:9443/v1/bdbs/1"
-docker exec -it re-node2 bash -c "curl -k -u "REDemo@redislabs.com:redis123" -H 'Content-type: application/json' -X DELETE https://localhost:9443/v1/bdbs/1"
+./crdlist.sh
+./crdadd.sh 40d72999-24b1-4684-8ef0-4b0aa28c521e
+```
+11. verify data is on third cluster
+```bash
+docker exec -it re-node3 bash -c "echo 'get nogo1' | redis-cli -p 14555"
+docker exec -it re-node3 bash -c "echo 'get nogo2' | redis-cli -p 14555"
+```
+12. delete database by doing a list.  Then, use returned crdb-guid as parameter to delete
+```bash
+./crdlist.sh
+./crdelete.sh 569c5693-2e7b-4744-ac0c-ea58f24ea9a6
 ```
 ## Test certificates on crdb2node
 This uses steps documented at this web page
@@ -99,8 +109,8 @@ http://tgrall.github.io/blog/2020/01/02/how-to-use-ssl-slash-tls-with-redis-ente
 ```
 ### test connectivity with secret enabled on each machine
 ```bash
- docker exec -it re-node1 bash -c "redis-cli -p 12000 -a secretdb01 info server"
- docker exec -it re-node2 bash -c "redis-cli -p 12000 -a secretdb01 info server"
+docker exec -it re-node1 bash -c "redis-cli -p 12000 -a secretdb01 info server"
+docker exec -it re-node2 bash -c "redis-cli -p 12000 -a secretdb01 info server"
 ```
 ### set up encryption
 get cluster proxy certificate from the all three nodes
@@ -137,8 +147,6 @@ https://127.0.0.1:18443
 ```bash
  docker exec -it jupyter bash -c "cd src;python addData.py"
 ```
-### Finally, add new DC to the CRDB and remove old cluster
-### Next 
 ## Steps for dns redis cluster
 1. Change directory to dnscluster
 2. To bring up cluster

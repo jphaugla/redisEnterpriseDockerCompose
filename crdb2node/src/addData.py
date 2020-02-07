@@ -13,7 +13,7 @@ try:
     ssl_keyfile='./certificates/client_key_app_001.pem',
     ssl_certfile='./certificates/client_cert_app_001.pem',
     ssl_cert_reqs='required',
-    ssl_ca_certs='./certificates/proxy_cert.pem'
+    ssl_ca_certs='./certificates/proxy_cert1.pem'
     )
 
   info = r.info()

@@ -7,7 +7,7 @@ try:
   r = redis.StrictRedis(
     decode_responses=True,
     host='re-node2',
-    port=12005
+    port=14555
     )
 
   info = r.info()
