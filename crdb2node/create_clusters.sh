@@ -5,6 +5,7 @@ docker-compose down
 echo "removing docker volumes"
 docker volume rm crdb2node_redispers1
 docker volume rm crdb2node_redispers2
+docker volume rm crdb2node_redispers3
 
 docker-compose up -d
 
