@@ -7,6 +7,7 @@ services:
     hostname: jupyter.north.redislabs-training.org
     volumes:
       - ./python_src:/home/jovyan/python_src
+      - ./resolv.conf:/etc/resolv.conf
     ports:
       - 8888:8888
     networks:
