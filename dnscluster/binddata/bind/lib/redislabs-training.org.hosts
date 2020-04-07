@@ -1,6 +1,6 @@
 $ttl 38400
 redislabs-training.org.	IN	SOA	ns.redislabs-training.org. admin.redislabs-training.org. (
-			1575599130
+			1575599131
 			10800
 			3600
 			604800

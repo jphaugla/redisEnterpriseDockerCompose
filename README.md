@@ -324,7 +324,8 @@ rladmin status
 3. Test client connectivity during failover.  Install python setup
 ```bash
 docker exec -it jupyter bash -c "python -r python_src/requirements.txt"
-
+docker exec -it jupyter bash -c "python python_src/connect.py"
+```
 
 ## Active-Active - not enough resources on my machine so I stopped on this part.  Better to do this on by crbd directory above
 			same problem with doing replica-of here
