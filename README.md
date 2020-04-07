@@ -321,6 +321,11 @@ rladmin tune cluster slave_ha_bdb_cooldown_period 0
 rladmin info cluster
 rladmin status
 ```
+3. Test client connectivity during failover.  Install python setup
+```bash
+docker exec -it jupyter bash -c "python -r python_src/requirements.txt"
+
+
 ## Active-Active - not enough resources on my machine so I stopped on this part.  Better to do this on by crbd directory above
 			same problem with doing replica-of here
 1. this is file to create both but not tested... ./create_north_and_south_cluster.sh
@@ -402,6 +407,7 @@ north.redislabs-training.org. 38400 IN	NS	n1.north.redislabs-training.org.
 https://localhost:10000
 ```
 4. DNS database is included.  This is setup
+* user name and password is root/password
 * Delete all existing DNS zones
 * Add a new master zone with domain name redislabs-training.org using ns.redislabs-training.org
 * address records
