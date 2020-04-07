@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  jupyter:
+    image: jupyter/minimal-notebook
+    container_name: jupyter
+    hostname: jupyter.north.redislabs-training.org
+    volumes:
+      - ./python_src:/home/jovyan/python_src
+    ports:
+      - 8888:8888
+    networks:
+      dnscluster_net:
+         ipv4_address: 172.21.1.31
+
+networks:
+  dnscluster_net:
+     ipam:
+         driver: default
+         config:
+             - subnet: 172.21.1.0/16
