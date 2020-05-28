@@ -383,11 +383,44 @@ Add the new datasource:
 To be able to debug dns issues, need dnsutils.
 1.  Install dnsutils on n3
 ```bash
-docker exec -it --user root n3
+docker exec -it --user root n3 bash
 apt-get update
 apt-get install dnsutils -y
 ```
-2.  Verify can resolve database name (example dependent on port)
+2.  Verify can resolve cluster name (must create cluster first)
+```bash
+dig dig north.redislabs-training.org NS
+```
+output
+```bash
+; <<>> DiG 9.11.3-1ubuntu1.12-Ubuntu <<>> north.redislabs-training.org NS
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 8603
+;; flags: qr rd ra; QUERY: 1, ANSWER: 3, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 4096
+; COOKIE: a8793b5e01113adc0dd13dc95ecfce82566396cc8f3e19f0 (good)
+;; QUESTION SECTION:
+;north.redislabs-training.org.	IN	NS
+
+;; ANSWER SECTION:
+north.redislabs-training.org. 3600 IN	NS	ns2.north.redislabs-training.org.
+north.redislabs-training.org. 3600 IN	NS	ns3.north.redislabs-training.org.
+north.redislabs-training.org. 3600 IN	NS	ns1.north.redislabs-training.org.
+
+;; Query time: 178 msec
+;; SERVER: 172.21.1.4#53(172.21.1.4)
+;; WHEN: Thu May 28 14:45:22 UTC 2020
+;; MSG SIZE  rcvd: 139
+```
+3.  Verify can resolve database name (example dependent on port)
+(must create database before this works)
+```bash
+dig redis-18959.north.redislabs-training.org NS
+```
+output 
 ```bash
 - opcode: QUERY, status: NOERROR, id: 44648
 ;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 3, ADDITIONAL: 1
@@ -411,7 +444,7 @@ north.redislabs-training.org. 38400 IN	NS	n1.north.redislabs-training.org.
 ;; WHEN: Thu Dec 12 14:12:56 UTC 2019
 ;; MSG SIZE  rcvd: 164
 ```
-3. To access dns server from browser
+4. To access dns server from browser (only getting this to work on firefox)
 ```bash
 https://localhost:10000
 ```
