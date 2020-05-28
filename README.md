@@ -102,7 +102,7 @@ docker exec -it re-node3 bash -c "echo 'get nogo2' | redis-cli -p 14555"
 12. delete database by doing a list.  Then, use returned crdb-guid as parameter to delete
 ```bash
 ./crdlist.sh
-./crdelete.sh 569c5693-2e7b-4744-ac0c-ea58f24ea9a6
+./crddelete.sh 569c5693-2e7b-4744-ac0c-ea58f24ea9a6
 ```
 ## Test certificates on crdb2node
 This uses steps documented at this web page
@@ -117,7 +117,7 @@ docker exec -it re-node1 bash -c "redis-cli -p 12000 -a secretdb01 info server"
 docker exec -it re-node2 bash -c "redis-cli -p 12000 -a secretdb01 info server"
 ```
 ### set up encryption
-get cluster proxy certificate from the all three nodes
+get cluster proxy certificate from all three nodes
 ```bash
 docker cp re-node1:/etc/opt/redislabs/proxy_cert.pem src/certificates/proxy_cert1.pem
 docker cp re-node2:/etc/opt/redislabs/proxy_cert.pem src/certificates/proxy_cert2.pem
@@ -150,6 +150,10 @@ https://127.0.0.1:18443
 10. write data to the database using python code
 ```bash
  docker exec -it jupyter bash -c "cd src;python addData.py"
+```
+11. cleanup
+```bash
+./cleanup.sh
 ```
 ## Steps for dns redis cluster
 1. Change directory to dnscluster

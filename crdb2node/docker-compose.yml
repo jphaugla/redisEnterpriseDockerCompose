@@ -71,18 +71,6 @@ services:
       - re-node2
       - re-node3
 
-  insight:
-    image: "redislabs/redisinsight:latest"
-    container_name: insight
-    ports:
-      - "8001:8001"
-    volumes:
-      - ./redisinsight:/db
-    depends_on:
-      - re-node1
-      - re-node2
-      - re-node3
-
 volumes:
   redispers1:
   redispers2:
