@@ -448,7 +448,29 @@ north.redislabs-training.org. 38400 IN	NS	n1.north.redislabs-training.org.
 ```bash
 https://localhost:10000
 ```
-4. DNS database is included.  This is setup
+5. Some Debug commands
+```bash
+This is my port 8443:
+root@jph-vu-olathe1:/var/opt/redislabs/log# nc -v localhost 8443
+Connection to localhost 8443 port [tcp/*] succeeded!
+^C
+This is my port 9443
+root@jph-vu-olathe1:/var/opt/redislabs/log# nc -v localhost 9443
+Connection to localhost 9443 port [tcp/*] succeeded!
+^C
+I have nothing here so this should not work (it doesn't)
+root@jph-vu-olathe1:/var/opt/redislabs/log# nc -v localhost 9448
+nc: connect to localhost port 9448 (tcp) failed: Connection refused
+root@jph-vu-olathe1:/var/opt/redislabs/log# ^C
+This is a database that I have so it works
+root@jph-vu-olathe1:/var/opt/redislabs/log# nc -v redis-17204.jphcluster.demo.redislabs.com 17204
+Connection to redis-17204.jphcluster.demo.redislabs.com 17204 port [tcp/*] succeeded!
+^C
+I have no database here so it does not work
+root@jph-vu-olathe1:/var/opt/redislabs/log# nc -v redis-17204.jphcluster.demo.redislabs.com 17208
+nc: connect to redis-17204.jphcluster.demo.redislabs.com port 17208 (tcp) failed: Connection refused
+```
+6. DNS database is included.  This is setup
 * user name and password is root/password
 * Delete all existing DNS zones
 * Add a new master zone with domain name redislabs-training.org using ns.redislabs-training.org
