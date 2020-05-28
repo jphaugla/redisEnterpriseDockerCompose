@@ -458,9 +458,9 @@ https://localhost:10000
 	* add address record for n2.north.redislabs-training.org with 172.21.1.2
 	* add address record for n3.north.redislabs-training.org with 172.21.1.3
 * namespace records
-	* add NS recrod for north.redislabs-training.org with n1.north.redislabs-training.org
-	* add NS recrod for north.redislabs-training.org with n2.north.redislabs-training.org
-	* add NS recrod for north.redislabs-training.org with n3.north.redislabs-training.org
+	* add NS record for north.redislabs-training.org with n1.north.redislabs-training.org
+	* add NS record for north.redislabs-training.org with n2.north.redislabs-training.org
+	* add NS record for north.redislabs-training.org with n3.north.redislabs-training.org
 * Continue for the south cluster
 * from within the dns server browser click on "Edit Zone Records File" and see that it matches content [here](https://github.com/jphaugla/redisEnterpriseDockerCompose/blob/master/dnscluster/binddata/bind/lib/redislabs-training.org.hosts)
 ##  Additional Links
