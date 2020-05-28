@@ -19,9 +19,13 @@ cd cluster3node
 ```bash
 ./create_redis_enterprise_3_node_cluster.sh
 ```
-3. execute createDB.sh to create a database
+3. execute create_demodb.sh to create a database
 ```bash
-./createDB.sh
+./create_demodb.sh
+```
+4. verify database works.  Login to node 1 and run rladmin
+```bash
+docker exec -it re-node1 bash -c "rladmin status"
 ```
 4. Execute cleanup.sh to kill and remove the 3 docker containers. [OPTIONAL]
 
