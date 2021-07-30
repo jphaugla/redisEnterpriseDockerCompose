@@ -15,7 +15,7 @@ Update Docker resources with 4 CPUs and 6-10GB RAM as shown here, <a href="https
 cd cluster3node
 ```
 
-2. Execute create_redis_enterprise_3_node_cluster.sh to create a 3 node(server) Redis Enterprise cluster
+2. Execute create_redis_enterprise_3_node_cluster.sh to create a 3 node(server) Redis Enterprise cluster.  If this fails with a 503 error, increase the wait time in the script.
 ```bash
 ./create_redis_enterprise_3_node_cluster.sh
 ```
@@ -119,6 +119,7 @@ docker exec -it re-node2 bash -c "redis-cli -p 12000 -a secretdb01 info server"
 ### set up encryption
 get cluster proxy certificate from all three nodes
 ```bash
+mkdir src/certificates
 docker cp re-node1:/etc/opt/redislabs/proxy_cert.pem src/certificates/proxy_cert1.pem
 docker cp re-node2:/etc/opt/redislabs/proxy_cert.pem src/certificates/proxy_cert2.pem
 docker cp re-node3:/etc/opt/redislabs/proxy_cert.pem src/certificates/proxy_cert3.pem
@@ -176,7 +177,7 @@ docker ps
 2.  get the IP for any node
 Use provided scripts to get the IP address for any node.
 ```bash
-./getip.sh
+./getip.sh n1
 ```
 Can also get the IP address by referencing docker-compose.yml as IPs are hardcoded in the yaml
 3.  User name and password will be  admin@redislabs-training.org / admin
@@ -239,14 +240,13 @@ docker stop n1
 ```bash
 docker exec -it n3 bash -c "rladmin status"
 ```
-14.  Simulate Node Failure with Standalone Shard (there is no slave shard so database will fail) and check status
-Database is down and node 2 is now in master role
+14.  Database is down and node 2 is now in master role. . Now start n1 and check again
 ```bash
-docker stop n1
+docker start n1
 docker exec -it n3 bash 
 rladmin status
 ```
-15.  Check do see if data still exists (spoiler alert:  it is gone!)
+15.  Can see that database is back up.  Check do see if data still exists (spoiler alert:  it is gone!)
 this exit leaves the redis-cli so in n3 bash
 ```bash
 redis-cli -h redis-12000.north.redislabs-training.org -p 12000
@@ -281,6 +281,7 @@ rladmin status
 redis-cli -h redis-12000.north.redislabs-training.org -p 12000
 keys *
 exit
+```
 4. Delete persistence database
 ```bash
 curl -k -u "admin@redislabs-training.org:admin" -H 'Content-type: application/json' -X DELETE https://redis-12000.north.redislabs-training.org:9443/v1/bdbs/2
