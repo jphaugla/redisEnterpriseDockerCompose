@@ -12,7 +12,7 @@ docker volume rm redis-enterprise-docker_redispers3
 docker-compose up -d
 
 echo "starting to sleep"
-sleep 60
+sleep 90
 
 echo "Creating Redis Enterprise cluster and joining nodes..."
 sudo docker exec -it --privileged re-node1 "/opt/redislabs/bin/rladmin" cluster create name cluster1.local username REDemo@redislabs.com password redis123
